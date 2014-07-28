@@ -19,7 +19,7 @@ def print_field(game)
   puts field
 end
 
-message='Enter the cell number to make your move'
+message='Enter the cell number to make your move.'
 until game.over? do
  system 'clear'
  puts message

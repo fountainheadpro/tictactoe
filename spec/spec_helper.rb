@@ -10,7 +10,7 @@ class TestableTTTGame < TTTGame
       @state<<=CELL_SIZE
       @state+=char_map[c]
     }
-    self.move
+    move
   end
 
   def random_state

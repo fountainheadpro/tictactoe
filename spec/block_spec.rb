@@ -1,4 +1,4 @@
-require 'spec_helper.rb'
+require 'spec_helper'
 
 describe 'blocking in Tic Tac Toe game' do
 

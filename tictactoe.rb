@@ -83,6 +83,7 @@ class TTTGame
       },
       {
         check: -> position, state {
+          p position
           mask=EMPTY_CHECK_MASK<<(position*CELL_SIZE)
           (state & mask)==0
         },
@@ -113,7 +114,9 @@ class TTTGame
   end
 
   def self.find_winnable(symbol, state)
-    find_winnable_for(symbol, :row, state) || find_winnable_for(symbol, :col, state) || find_winnable_for(symbol, :diag, state)
+    find_winnable_for(symbol, :row, state) ||
+    find_winnable_for(symbol, :col, state) ||
+    find_winnable_for(symbol, :diag, state)
   end
 
   #fork is crossing of two singles row or col or diag
@@ -142,13 +145,13 @@ class TTTGame
     find_fork_for(symbol, :col, :diag, state)
   end
 
-  def valid_move?
+  def valid_move?(position)
     MOVE_VALIDATION_CHECKS.each{|check|
-      raise check[:message].to_s unless check[:check].call(@last_position, @state)
+      raise check[:message].to_s unless check[:check].call(position, @state)
     }
   end
 
-  #winning strategies are shamelessly stolen from http://en.wikipedia.org/wiki/Tic-tac-toe
+  #game strategies are shamelessly stolen from http://en.wikipedia.org/wiki/Tic-tac-toe
   STRATEGIES={
     win: -> state {
       find_winnable(COMPUTER_SYMBOL, state)
@@ -179,11 +182,24 @@ class TTTGame
     }
   }
 
+  def register_move(symbol, position)
+    @last_position=position
+    @number_of_steps+=1
+    @state |= (symbol << (position*CELL_SIZE))
+  end
+
+  def move
+    position=nil
+    STRATEGIES.find{|key, strategy|
+      @last_strategy=key
+      position = strategy.call(@state)
+    }
+    register_move(COMPUTER_SYMBOL, position)
+  end
+
   public
   def register_player_move(position)
-    @number_of_steps+=1
-    @last_position=position
-    @state |= (PLAYER_SYMBOL<<(position*CELL_SIZE)) if valid_move?
+    register_move(PLAYER_SYMBOL, position) if valid_move?(position)
     move
   end
 
@@ -197,17 +213,6 @@ class TTTGame
 
   def result
     won? ? :computer_won : over? ? :tie : nil
-  end
-
-  def move
-    position=nil
-    STRATEGIES.find{|key, strategy|
-      @last_strategy=key
-      position = strategy.call(@state)
-    }
-    @last_position=position
-    @number_of_steps+=1
-    @state |= (COMPUTER_SYMBOL << (position*CELL_SIZE))
   end
 
   def each
