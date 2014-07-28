@@ -25,7 +25,7 @@ until game.over? do
  puts message
  print_field(game)
  begin
-  game.register_player_move(TTTGame::FIELD_SIZE-gets.to_i)
+  game.move(TTTGame::FIELD_SIZE-gets.to_i)
   message=''
  rescue
    message=$!
