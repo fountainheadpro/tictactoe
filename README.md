@@ -1,4 +1,7 @@
 tictactoe
 =========
 
-Tic Tac Toe game
+Tic Tac Toe game implemented to specs based on http://en.wikipedia.org/wiki/Tic-tac-toe#Strategy
+
+run: ruby cli.rb to launch the game
+run: rspec ./spec/*.rb to run tests
